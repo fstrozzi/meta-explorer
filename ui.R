@@ -16,7 +16,7 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      textInput("proteins",
+      textInput("protein",
                   "List of proteins:",
                   value = "Protein7660",
                   placeholder = "Paste a list of protein ids")
