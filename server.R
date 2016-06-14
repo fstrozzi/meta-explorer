@@ -35,14 +35,19 @@ protein_to_pathway <- function(id){
              SELECT ?ko ?unipathway ?pathwayName ?biocyc
              WHERE
              {
+             OPTIONAL {
              uniprotkb:@{id} rdfs:seeAlso ?ko .
              ?ko up:database <http://purl.uniprot.org/database/KO> .
+             }
+             OPTIONAL {
              uniprotkb:@{id} up:annotation ?node .
              ?node rdf:type up:Pathway_Annotation .
              ?node rdfs:seeAlso ?unipathway .
-             ?unipathway rdfs:label ?pathwayName .
+             ?unipathway rdfs:label ?pathwayName . }
+             OPTIONAL {
              uniprotkb:@{id} rdfs:seeAlso ?biocyc . 
              ?biocyc up:database <http://purl.uniprot.org/database/BioCyc>
+             }
              }
              ")
 
@@ -53,10 +58,15 @@ protein_to_pathway <- function(id){
 }
 
 uri2url = function(x) {
-  x = gsub('<','',x)
-  x = gsub('>','',x)
-  name = tail(unlist(strsplit(x,"/")),n=1)
-  toString(tags$a(href=x,name))
+  if (is.na(x)) {
+    return(NA)
+  }
+  else {
+    x = gsub('<','',x)
+    x = gsub('>','',x)
+    name = tail(unlist(strsplit(x,"/")),n=1)
+    return(toString(tags$a(href=x,name)))
+  }
 }
 
 create_urls = function(dt) {
