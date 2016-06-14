@@ -9,6 +9,7 @@ library(shiny)
 library(DT)
 library(SPARQL)
 library(GetoptLong)
+library(data.table)
 
 protein_to_pathway <- function(id){
   # Step 1 - Set up preliminaries and define query
@@ -53,7 +54,9 @@ shinyServer(function(input, output) {
 
   output$table = DT::renderDataTable({
     print(input$protein)
-    datatable(protein_to_pathway(input$protein))
+    dt = as.data.table(protein_to_pathway("P0A6P9"))
+    dt[,ko:=toString(tags$a(href=ko,ko)), by = 1:nrow(dt)]
+    datatable(dt)
   })
 
 
