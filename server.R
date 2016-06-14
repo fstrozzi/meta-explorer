@@ -49,12 +49,22 @@ protein_to_pathway <- function(id){
   df
 }
 
+create_url = function(x) {
+  x = gsub('<','',x)
+  x = gsub('>','',x)
+  name = tail(unlist(strsplit(x,"/")),n=1)
+  return(toString(tags$a(href=x,name)))
+}
+
+
 shinyServer(function(input, output) {
 
   output$table = DT::renderDataTable({
     print(input$protein)
-    datatable(protein_to_pathway(input$protein))
-  })
+    df = protein_to_pathway(input$protein)
+    df[c("ko","unipathway")] = lapply(dt[c("ko","unipathway")], function(x) {create_url(x)})
+    datatable(df,escape = F)
+  } )
 
 
 })
