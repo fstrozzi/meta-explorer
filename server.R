@@ -66,13 +66,17 @@ create_urls = function(dt) {
   dt
 }
 
+group_by = function(dt) {
+  dt[,lapply(.SD,paste0,collapse=","),by=c("ko","unipathway","pathwayName")]
+}
+
 
 shinyServer(function(input, output) {
   output$table = DT::renderDataTable({
     print(input$protein)
     dt = as.data.table(protein_to_pathway(input$protein))
     dt = create_urls(dt)
-    datatable(dt,escape = F)
+    datatable(group_by(dt),escape = F)
   })
 
 })
