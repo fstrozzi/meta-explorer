@@ -66,5 +66,4 @@ shinyServer(function(input, output) {
     datatable(df,escape = F)
   } )
 
-
 })
