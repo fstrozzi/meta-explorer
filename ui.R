@@ -14,16 +14,16 @@ shinyUI(fluidPage(
   titlePanel("MetaExplorer"),
 
   # Sidebar with a slider input for number of bins
-  sidebarLayout(
-    sidebarPanel(
+  fluidRow(
+    column(12,
       textInput("protein",
                   "List of proteins:",
-                  value = "Protein7660",
+                  value = "P0A6P9",
                   placeholder = "Paste a list of protein ids")
     ),
 
     # Show a plot of the generated distribution
-    mainPanel(
+    column(12,
       DT::dataTableOutput('table')
     )
   )
