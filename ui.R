@@ -18,7 +18,7 @@ shinyUI(fluidPage(
     sidebarPanel(
       textInput("protein",
                   "List of proteins:",
-                  value = "Protein7660",
+                  value = "P0A6P9",
                   placeholder = "Paste a list of protein ids")
     ),
 
