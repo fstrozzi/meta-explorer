@@ -54,7 +54,7 @@ shinyServer(function(input, output) {
 
   output$table = DT::renderDataTable({
     print(input$protein)
-    dt = as.data.table(protein_to_pathway("P0A6P9"))
+    # dt = as.data.table(protein_to_pathway("P0A6P9"))
     dt[,ko:=toString(tags$a(href=ko,ko)), by = 1:nrow(dt)]
     datatable(dt)
   })
