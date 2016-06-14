@@ -89,9 +89,11 @@ shinyServer(function(input, output) {
     proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
     values = paste(proteins,collapse=" ")
     dt = as.data.table(protein_to_pathway(values))
-    dt[is.na(dt)] = ""
-    dt = create_urls(dt)
-    datatable(collapse_triplets(dt),escape = F)
+    if (length(dt) != 0) {
+      dt[is.na(dt)] = ""
+      dt = create_urls(dt)
+      datatable(collapse_triplets(dt),escape = F)
+    }
   })
 
 })
