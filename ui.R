@@ -26,6 +26,9 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     column(12,
       DT::dataTableOutput('table')
+    ),
+    column(12,
+      plotOutput('pathway')
     )
   )
 ))

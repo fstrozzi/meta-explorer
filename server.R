@@ -90,7 +90,8 @@ query_endpoint = function(ids) {
 }
 
 shinyServer(function(input, output) {
-  output$table = DT::renderDataTable({
+  
+  results = reactive({
     proteins = unlist(strsplit(input$proteins,"\n"))
     proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
     splitted_ids = split(proteins, ceiling(seq_along(proteins)/200))
@@ -107,8 +108,19 @@ shinyServer(function(input, output) {
     if (length(dt) != 0) {
       dt[is.na(dt)] = ""
       dt = create_urls(dt)
-      datatable(collapse_triplets(dt),escape = F)
+      return(collapse_triplets(dt))
     }
+    
+    
+  })
+  
+  output$table = DT::renderDataTable({
+    datatable(results(),escape = F)
+  })
+  output$pathway = renderPlot({
+    data = results()
+    pathways = unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],";"))
+    qplot(pathways) + coord_flip() + theme_bw()
   })
 
 })
