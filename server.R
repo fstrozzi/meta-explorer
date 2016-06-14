@@ -56,7 +56,7 @@ protein_to_pathway <- function(id){
   # Step 2 - Use SPARQL package to submit query and save results to a data frame
   qd <- SPARQL(endpoint,query)
   df <- qd$results
-  df
+  return(df)
 }
 
 uri2url = function(x) {
@@ -76,19 +76,34 @@ create_urls = function(dt) {
   dt[,ko:=uri2url(ko), by = 1:nrow(dt)]
   dt[,unipathway:=uri2url(unipathway), by = 1:nrow(dt)]
   dt[,biocyc:=uri2url(biocyc), by = 1:nrow(dt)]
-  dt
+  return(dt)
 }
 
 collapse_triplets = function(dt) {
   dt[,lapply(.SD,paste0,collapse=","),by=c("protein","ko","unipathway","pathwayName")]
 }
 
+query_endpoint = function(ids) {
+  values = paste(unlist(ids),collapse=" ")
+  results = as.data.table(protein_to_pathway(values))
+  return(results)
+}
+
 shinyServer(function(input, output) {
   output$table = DT::renderDataTable({
     proteins = unlist(strsplit(input$proteins,"\n"))
     proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
-    values = paste(proteins,collapse=" ")
-    dt = as.data.table(protein_to_pathway(values))
+    splitted_ids = split(proteins, ceiling(seq_along(proteins)/200))
+    dt <- data.frame(protein=character(),
+                     ko=character(),
+                     unipathway=character(),
+                     pathwayName=character(),
+                     biocyc=character(),
+                     stringsAsFactors=FALSE)
+    for(i in 1:length(splitted_ids)) {
+      results = query_endpoint(splitted_ids[i])
+      dt = rbindlist(list(dt,results))
+    }
     if (length(dt) != 0) {
       dt[is.na(dt)] = ""
       dt = create_urls(dt)
