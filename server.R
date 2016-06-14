@@ -32,22 +32,24 @@ protein_to_pathway <- function(id){
              PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
              PREFIX faldo:<http://biohackathon.org/resource/faldo#>
              
-             SELECT ?ko ?unipathway ?pathwayName ?biocyc
+             SELECT ?protein ?ko ?unipathway ?pathwayName ?biocyc
              WHERE
              {
+             ?protein rdf:type up:Protein .
              OPTIONAL {
-             uniprotkb:@{id} rdfs:seeAlso ?ko .
+             ?protein rdfs:seeAlso ?ko .
              ?ko up:database <http://purl.uniprot.org/database/KO> .
              }
              OPTIONAL {
-             uniprotkb:@{id} up:annotation ?node .
+             ?protein up:annotation ?node .
              ?node rdf:type up:Pathway_Annotation .
              ?node rdfs:seeAlso ?unipathway .
              ?unipathway rdfs:label ?pathwayName . }
              OPTIONAL {
-             uniprotkb:@{id} rdfs:seeAlso ?biocyc . 
+             ?protein rdfs:seeAlso ?biocyc . 
              ?biocyc up:database <http://purl.uniprot.org/database/BioCyc>
              }
+             VALUES ?protein {@{id}}
              }
              ")
 
@@ -70,23 +72,26 @@ uri2url = function(x) {
 }
 
 create_urls = function(dt) {
+  dt[,protein:=uri2url(protein), by = 1:nrow(dt)]
   dt[,ko:=uri2url(ko), by = 1:nrow(dt)]
   dt[,unipathway:=uri2url(unipathway), by = 1:nrow(dt)]
   dt[,biocyc:=uri2url(biocyc), by = 1:nrow(dt)]
   dt
 }
 
-group_by = function(dt) {
-  dt[,lapply(.SD,paste0,collapse=","),by=c("ko","unipathway","pathwayName")]
+collapse_triplets = function(dt) {
+  dt[,lapply(.SD,paste0,collapse=","),by=c("protein","ko","unipathway","pathwayName")]
 }
-
 
 shinyServer(function(input, output) {
   output$table = DT::renderDataTable({
-    print(input$protein)
-    dt = as.data.table(protein_to_pathway(input$protein))
+    proteins = unlist(strsplit(input$proteins,"\n"))
+    proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
+    values = paste(proteins,collapse=" ")
+    dt = as.data.table(protein_to_pathway(values))
+    dt[is.na(dt)] = ""
     dt = create_urls(dt)
-    datatable(group_by(dt),escape = F)
+    datatable(collapse_triplets(dt),escape = F)
   })
 
 })

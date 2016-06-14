@@ -16,10 +16,11 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   fluidRow(
     column(12,
-      textInput("protein",
-                  "List of proteins:",
-                  value = "P0A6P9",
-                  placeholder = "Paste a list of protein ids")
+      tags$textarea(id="proteins", rows=3, cols=40, "P0A6P9")
+      # textInput("protein",
+      #             "List of proteins:",
+      #             value = "P0A6P9",
+      #             placeholder = "Paste a list of protein ids")
     ),
 
     # Show a plot of the generated distribution
