@@ -119,8 +119,12 @@ shinyServer(function(input, output) {
   })
   output$pathway = renderPlot({
     data = results()
-    pathways = unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],";"))
-    qplot(pathways) + coord_flip() + theme_bw()
+    pathways = as.data.frame(unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],";")))
+    colnames(pathways) = c("pathwayName")
+    pathways_freq = data.frame(table(pathways$pathwayName))
+    pathways_filtered = subset(pathways_freq,Freq > 1)
+    print(pathways_filtered)
+    ggplot(data=pathways_filtered, aes(x=Var1,y=Freq)) + geom_bar(stat="identity") + coord_flip() + theme_bw() + xlab("Pathways")
   })
 
 })
