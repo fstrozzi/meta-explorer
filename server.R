@@ -93,25 +93,32 @@ query_endpoint = function(ids) {
 shinyServer(function(input, output) {
   
   results = reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Querying the endpoints...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
     proteins = unlist(strsplit(input$proteins,"\n"))
-    proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
-    splitted_ids = split(proteins, ceiling(seq_along(proteins)/200))
-    dt <- data.frame(protein=character(),
-                     ko=character(),
-                     unipathway=character(),
-                     pathwayName=character(),
-                     biocyc=character(),
-                     stringsAsFactors=FALSE)
-    for(i in 1:length(splitted_ids)) {
-      results = query_endpoint(splitted_ids[i])
-      dt = rbindlist(list(dt,results))
+    if (length(proteins) >= 1) {
+      
+      proteins = unlist(lapply(proteins,function(x) paste("uniprotkb:",x,sep="")))
+      splitted_ids = split(proteins, ceiling(seq_along(proteins)/200))
+      dt <- data.frame(protein=character(),
+                       ko=character(),
+                       unipathway=character(),
+                       pathwayName=character(),
+                       biocyc=character(),
+                       stringsAsFactors=FALSE)
+      for(i in 1:length(splitted_ids)) {
+        results = query_endpoint(splitted_ids[i])
+        dt = rbindlist(list(dt,results))
+      }
+      if (length(dt) != 0) {
+        dt[is.na(dt)] = ""
+        dt = create_urls(dt)
+        return(collapse_triplets(dt))
+      }
     }
-    if (length(dt) != 0) {
-      dt[is.na(dt)] = ""
-      dt = create_urls(dt)
-      return(collapse_triplets(dt))
-    }
-    
     
   })
   
@@ -119,6 +126,7 @@ shinyServer(function(input, output) {
     datatable(results(),escape = F)
   })
   output$pathway = renderPlot({
+    # Get the results
     data = results()
     pathways = as.data.frame(unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],";")))
     colnames(pathways) = c("pathwayName")
