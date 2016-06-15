@@ -29,6 +29,11 @@ Source: CRAN
 Version: 2.1.2
 Hash: c515e41c73294952cbb33ee1c1be5a2d
 
+Package: RColorBrewer
+Source: CRAN
+Version: 1.1-2
+Hash: c0d56cd15034f395874c870141870c25
+
 Package: RCurl
 Source: CRAN
 Version: 1.95-4.8
@@ -72,16 +77,37 @@ Source: CRAN
 Version: 2.3-47
 Hash: d25d96d908cd21080f24c89eed4c80a0
 
+Package: colorspace
+Source: CRAN
+Version: 1.2-6
+Hash: 00bb12245cd975c450cc4a960884fa15
+
 Package: data.table
 Source: CRAN
 Version: 1.9.6
 Hash: f92ef1f73afa43bf6fd69a22f3794abd
 Requires: chron
 
+Package: dichromat
+Source: CRAN
+Version: 2.0-0
+Hash: 08eed0c80510af29bb15f840ccfe37ce
+
 Package: digest
 Source: CRAN
 Version: 0.6.9
 Hash: fd55d5a024f160fc001a5ece1e27782d
+
+Package: ggplot2
+Source: CRAN
+Version: 2.1.0
+Hash: 50e297b0191179c39c7dcae0eff72b51
+Requires: digest, gtable, plyr, reshape2, scales
+
+Package: gtable
+Source: CRAN
+Version: 0.2.0
+Hash: cd78381a9d3fea966ac39bd0daaf5554
 
 Package: htmltools
 Source: CRAN
@@ -106,6 +132,11 @@ Source: CRAN
 Version: 0.9.21
 Hash: 4715435f79ce983ec7e041f6be4742f4
 
+Package: labeling
+Source: CRAN
+Version: 0.3
+Hash: ecf589b42cd284b03a4beb9665482d3e
+
 Package: magrittr
 Source: CRAN
 Version: 1.5
@@ -116,21 +147,56 @@ Source: CRAN
 Version: 0.4
 Hash: b08c52dae92a0a11e64a4deea032ec33
 
+Package: munsell
+Source: CRAN
+Version: 0.4.3
+Hash: f96d896947fcaf9b6d0074002e9f4f9d
+Requires: colorspace
+
 Package: packrat
 Source: CRAN
 Version: 0.4.7-1
 Hash: 16ca16d36eb18d1d16113606ecc5c400
+
+Package: plyr
+Source: CRAN
+Version: 1.8.4
+Hash: 9710078c5fd126420ec039be1db44994
+Requires: Rcpp
+
+Package: reshape2
+Source: CRAN
+Version: 1.4.1
+Hash: 4c341beb363831f5320f678f7f1b679d
+Requires: Rcpp, plyr, stringr
 
 Package: rjson
 Source: CRAN
 Version: 0.2.15
 Hash: def074f38d0cff3b597649ee6f976128
 
+Package: scales
+Source: CRAN
+Version: 0.4.0
+Hash: bce90b73946711302c29ceabdb08241c
+Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
+
 Package: shiny
 Source: CRAN
 Version: 0.13.2
 Hash: 28d6903a44dc53bd4823fa43ccdc08e5
 Requires: R6, digest, htmltools, httpuv, jsonlite, mime, xtable
+
+Package: stringi
+Source: CRAN
+Version: 1.1.1
+Hash: 48f2afc5dfecb65ba32a87d38b3533ff
+
+Package: stringr
+Source: CRAN
+Version: 1.0.0
+Hash: 2676dd5f88890910962b733b0f9540e1
+Requires: magrittr, stringi
 
 Package: xtable
 Source: CRAN

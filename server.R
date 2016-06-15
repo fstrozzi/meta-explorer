@@ -10,6 +10,7 @@ library(DT)
 library(SPARQL)
 library(GetoptLong)
 library(data.table)
+library(ggplot2)
 
 protein_to_pathway <- function(id){
   # Step 1 - Set up preliminaries and define query
@@ -123,8 +124,7 @@ shinyServer(function(input, output) {
     colnames(pathways) = c("pathwayName")
     pathways_freq = data.frame(table(pathways$pathwayName))
     pathways_filtered = subset(pathways_freq,Freq > 1)
-    print(pathways_filtered)
     ggplot(data=pathways_filtered, aes(x=Var1,y=Freq)) + geom_bar(stat="identity") + coord_flip() + theme_bw() + xlab("Pathways")
-  })
+  },height=800,width=600)
 
 })
