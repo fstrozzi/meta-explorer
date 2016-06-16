@@ -21,14 +21,18 @@ shinyUI(fluidPage(
       #             "List of proteins:",
       #             value = "P0A6P9",
       #             placeholder = "Paste a list of protein ids")
-    ),
-
+    )
+  ),
+  fluidRow(
     # Show a plot of the generated distribution
     column(12,
       DT::dataTableOutput('table')
     ),
-    column(12,
+    column(6,
       plotOutput('pathway')
+    ),
+    column(6,
+      plotOutput('go')
     )
   )
 ))

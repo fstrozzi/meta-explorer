@@ -33,7 +33,7 @@ protein_to_pathway <- function(id){
              PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
              PREFIX faldo:<http://biohackathon.org/resource/faldo#>
              
-             SELECT ?protein ?ko ?unipathway ?pathwayName ?biocyc
+             SELECT ?protein ?ko ?unipathway ?pathwayName ?biocyc ?goLabel
              WHERE
              {
              ?protein rdf:type up:Protein .
@@ -49,6 +49,11 @@ protein_to_pathway <- function(id){
              OPTIONAL {
              ?protein rdfs:seeAlso ?biocyc . 
              ?biocyc up:database <http://purl.uniprot.org/database/BioCyc>
+             }
+             OPTIONAL {
+             ?protein up:classifiedWith ?go .
+	           ?go up:database <http://purl.uniprot.org/database/go> .
+             ?go rdfs:label ?goLabel .
              }
              VALUES ?protein {@{id}}
              }
@@ -80,8 +85,12 @@ create_urls = function(dt) {
   return(dt)
 }
 
+unique_values = function(values) {
+  paste0(unique(unlist(strsplit(values,";"))),collapse=",")
+}
+
 collapse_triplets = function(dt) {
-  dt[,lapply(.SD,paste0,collapse=","),by=c("protein","ko","unipathway","pathwayName")]
+  dt[,lapply(.SD,unique_values),by=c("protein","ko")]
 }
 
 query_endpoint = function(ids) {
@@ -108,6 +117,7 @@ shinyServer(function(input, output) {
                        unipathway=character(),
                        pathwayName=character(),
                        biocyc=character(),
+                       go=character(),
                        stringsAsFactors=FALSE)
       for(i in 1:length(splitted_ids)) {
         results = query_endpoint(splitted_ids[i])
@@ -123,16 +133,39 @@ shinyServer(function(input, output) {
   })
   
   output$table = DT::renderDataTable({
-    datatable(results(),escape = F)
+    datatable(results(),escape = F,colnames=c("Protein ID","KEGG Ortholog","UniPathway IDs","Pathways Names","BioCyc IDs","Gene Ontologies"))
   })
   output$pathway = renderPlot({
     # Get the results
     data = results()
-    pathways = as.data.frame(unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],";")))
+    pathways = as.data.frame(unlist(strsplit(data$pathwayName[!is.na(data$pathwayName)],",")))
     colnames(pathways) = c("pathwayName")
     pathways_freq = data.frame(table(pathways$pathwayName))
     pathways_filtered = subset(pathways_freq,Freq > 1)
-    ggplot(data=pathways_filtered, aes(x=Var1,y=Freq)) + geom_bar(stat="identity") + coord_flip() + theme_bw() + xlab("Pathways")
+    ggplot(data=pathways_filtered, aes(x=Var1,y=Freq)) + 
+      geom_bar(stat="identity",fill="royalblue2",colour="black") + 
+      coord_flip() + 
+      theme_bw() + 
+      xlab("Pathways name") +
+      ggtitle("Pathways") +
+      theme(axis.text.y = element_text(colour="grey20",size=10))
   },height=800,width=600)
 
+  
+  output$go = renderPlot({
+    # Get the results
+    data = results()
+    go = as.data.frame(unlist(strsplit(data$go[!is.na(data$go)],",")))
+    colnames(go) = c("go")
+    go_freq = data.frame(table(go$go))
+    go_filtered = subset(go_freq,Freq > 1)
+    ggplot(data=go_filtered, aes(x=Var1,y=Freq)) + 
+      geom_bar(stat="identity",fill="tomato2",colour="black") + 
+      coord_flip() + 
+      theme_bw() + 
+      xlab("Gene Ontologies") + 
+      ggtitle("Gene Ontology") +
+      theme(axis.text.y = element_text(colour="grey20",size=10))
+  },height=800,width=600)
+  
 })
