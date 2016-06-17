@@ -11,11 +11,14 @@ library(DT)
 shinyUI(fluidPage(
 
   # Application title
-  titlePanel("MetaExplorer"),
-
+  
+  
   # Sidebar with a slider input for number of bins
   fluidRow(
-    column(12,
+    column(2,
+        titlePanel("MetaExplorer")
+    ),
+    column(5,
       tags$textarea(id="proteins", rows=3, cols=40, "P0A6P9")
       # textInput("protein",
       #             "List of proteins:",
@@ -33,6 +36,11 @@ shinyUI(fluidPage(
     ),
     column(6,
       plotOutput('go')
+    )
+  ),
+  fluidRow(
+    column(12,
+      plotOutput("biocyc")
     )
   )
 ))
