@@ -77,7 +77,20 @@ uri2url = function(x) {
   }
 }
 
+name_from_uri = function(x) {
+  if (is.na(x)) {
+    return(NA)
+  }
+  else {
+    x = gsub('<','',x)
+    x = gsub('>','',x)
+    name = tail(unlist(strsplit(x,"/")),n=1)
+    return(name)
+  }
+}
+
 create_urls = function(dt) {
+  dt[,uniprot:=name_from_uri(protein),by=1:nrow(dt)]
   dt[,protein:=uri2url(protein), by = 1:nrow(dt)]
   dt[,ko:=uri2url(ko), by = 1:nrow(dt)]
   dt[,unipathway:=uri2url(unipathway), by = 1:nrow(dt)]
@@ -102,6 +115,10 @@ query_endpoint = function(ids) {
 shinyServer(function(input, output) {
   
   results = reactive({
+    # Loading BioCyc file
+    uniprot2biocyc = as.data.table(read.table("data/uniprot2pathways.txt",sep="\t",header=T,stringsAsFactors = F))
+    collapsed_uniprot2biocyc = uniprot2biocyc[,lapply(.SD,paste0,collapse=","),by="uniprot"]
+    
     # Create a Progress object
     progress <- shiny::Progress$new()
     progress$set(message = "Querying the endpoints...", value = 0)
@@ -126,14 +143,16 @@ shinyServer(function(input, output) {
       if (length(dt) != 0) {
         dt[is.na(dt)] = ""
         dt = create_urls(dt)
-        return(collapse_triplets(dt))
+        dt = collapse_triplets(dt)
+        dt = merge(dt,collapsed_uniprot2biocyc,all.x=T,by="uniprot")
+        return(dt)
       }
     }
     
   })
   
   output$table = DT::renderDataTable({
-    datatable(results(),escape = F,colnames=c("Protein ID","KEGG Ortholog","UniPathway IDs","Pathways Names","BioCyc IDs","Gene Ontologies"))
+    datatable(results(),escape = F,colnames=c("Protein ID","Protein Link","KEGG Ortholog","UniPathway IDs","Pathways Names","BioCyc IDs","Gene Ontologies","BioCyc Pathways"))
   })
   output$pathway = renderPlot({
     # Get the results
