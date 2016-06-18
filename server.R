@@ -113,7 +113,7 @@ query_endpoint = function(ids) {
   return(results)
 }
 
-shinyServer(function(input, output) {
+server = shinyServer(function(input, output) {
   results = reactive({
     # Loading BioCyc file
     uniprot2biocyc = as.data.table(read.table("data/uniprot2pathways.txt",sep="\t",header=T,stringsAsFactors = F))

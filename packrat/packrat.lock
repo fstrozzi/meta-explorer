@@ -187,6 +187,12 @@ Version: 0.13.2
 Hash: 28d6903a44dc53bd4823fa43ccdc08e5
 Requires: R6, digest, htmltools, httpuv, jsonlite, mime, xtable
 
+Package: shinydashboard
+Source: CRAN
+Version: 0.5.1
+Hash: 3d9eaa2d45febd7c1237f93a4c7c210d
+Requires: htmltools, shiny
+
 Package: stringi
 Source: CRAN
 Version: 1.1.1

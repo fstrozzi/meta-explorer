@@ -7,18 +7,19 @@
 
 library(shiny)
 library(DT)
+library(shinydashboard)
 
-shinyUI(fluidPage(
 
+dashboardPage(
+  dashboardHeader(title="Meta Explorer"),
+  dashboardSidebar(),
+  dashboardBody(
   # Application title
   
   
   # Sidebar with a slider input for number of bins
   fluidRow(
-    column(2,
-        titlePanel("MetaExplorer")
-    ),
-    column(5,
+    column(12,
       tags$textarea(id="proteins", rows=3, cols=40, "P0A6P9")
       # textInput("protein",
       #             "List of proteins:",
@@ -44,3 +45,5 @@ shinyUI(fluidPage(
     )
   )
 ))
+
+
